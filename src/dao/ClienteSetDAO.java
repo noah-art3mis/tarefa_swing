@@ -25,7 +25,7 @@ public class ClienteSetDAO implements IClienteDAO {
   }
 
   @Override
-  public Cliente read(Long cpf) {
+  public Cliente read(String cpf) {
     for (Cliente item : set) {
       if (item.getCpf().equals(cpf)) {
         return item;
@@ -48,7 +48,7 @@ public class ClienteSetDAO implements IClienteDAO {
   }
 
   @Override
-  public void delete(Long cpf) {
+  public void delete(String cpf) {
     Cliente cliente = this.read(cpf);
     set.remove(cliente);
   }

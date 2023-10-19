@@ -54,28 +54,28 @@ public class Cliente {
         this.endereco = endereco;
     }
 
-    public Long getCpf() {
-        return cpf;
+    public String getCpf() {
+        return cpf.toString();
     }
 
-    public void setCpf(Long cpf) {
-        this.cpf = cpf;
+    public void setCpf(String cpf) {
+        this.cpf = Long.parseLong(cpf);
     }
 
-    public Long getTelefone() {
-        return telefone;
+    public String getTelefone() {
+        return telefone.toString();
     }
 
-    public void setTelefone(Long telefone) {
-        this.telefone = telefone;
+    public void setTelefone(String telefone) {
+        this.telefone = Long.parseLong(telefone);
     }
 
-    public Integer getNumero() {
-        return numero;
+    public String getNumero() {
+        return numero.toString();
     }
 
-    public void setNumero(Integer numero) {
-        this.numero = numero;
+    public void setNumero(String numero) {
+        this.numero = Integer.parseInt(numero);
     }
 
     public String getCidade() {

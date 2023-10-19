@@ -14,7 +14,7 @@ import java.util.TreeMap;
  */
 public class ClienteMapDAO implements IClienteDAO {
 
-  private Map<Long, Cliente> map;
+  private Map<String, Cliente> map;
 
   public ClienteMapDAO() {
     map = new TreeMap<>();
@@ -30,7 +30,7 @@ public class ClienteMapDAO implements IClienteDAO {
   }
 
   @Override
-  public Cliente read(Long cpf) {
+  public Cliente read(String cpf) {
     if (!map.containsKey(cpf)) {
       return null;
     }
@@ -56,7 +56,7 @@ public class ClienteMapDAO implements IClienteDAO {
   }
 
   @Override
-  public void delete(Long cpf) {
+  public void delete(String cpf) {
     if (map.containsKey(cpf)) {
       map.get(cpf);
       map.remove(cpf);

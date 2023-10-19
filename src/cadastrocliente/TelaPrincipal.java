@@ -46,36 +46,61 @@ public class TelaPrincipal extends javax.swing.JFrame {
             return;
         }
                        
-        Cliente cliente = new Cliente(nome, cpf, tel, end, num, cidade, estado);
-        
-        Boolean isCadastrado = database.create(cliente);
-        
-        if (isCadastrado) {
+        try {
+            Cliente cliente = new Cliente(nome, cpf, tel, end, num, cidade, estado);
+            database.create(cliente);
             modelo.addRow(new Object[] {nome, cpf, tel, end, num, cidade, estado});
             resetFields();
-        } else {
-            showError("Cadastro não foi bem-sucedido.");
+        } catch (Exception e) {
+            showError("Cadastro inválido. Verifique se os campos estão corretamente preenchidos.");
         }
-        
     }
     
     private void read() {
         int row = tableClientes.getSelectedRow();
-        Long cpf = (Long) tableClientes.getValueAt(row, 1);
+        String cpf = (String) tableClientes.getValueAt(row, 1);
         
         Cliente cliente = database.read(cpf);
         setFields(cliente);
     }
     
     private void update() {
-    //TODO
+        int row = tableClientes.getSelectedRow();
+
+        if (row == -1) {
+            showError("Nenhuma item selecionado.");
+            return;
+        }
+            
+        String nome = txtNome.getText();
+        String cpf = txtCPF.getText();
+        String tel = txtTelefone.getText();
+        String end = txtEndereco.getText();
+        String num = txtNumero.getText();
+        String cidade = txtCidade.getText();
+        String estado = txtEstado.getText();
+
+        if (!validateFields(nome, cpf, tel, end, num, cidade, estado)) {
+            showError("Dados inválidos.");
+            return;
+        }
+        
+        try {
+            Cliente cliente = new Cliente (nome, cpf, tel, end, num, cidade, estado);
+            database.update(cliente);
+
+            modelo.removeRow(row);
+            modelo.addRow(new Object[] {nome, cpf, tel, end, num, cidade, estado});
+            resetFields();
+        } catch (Exception e) {
+            showError("Atualização de cadastro inválido. Verifique se os campos estão corretamente preenchidos.");
+        }
     }
     
     
     private void delete() {
-    //TODO
         int row = tableClientes.getSelectedRow();
-        Long cpf = (Long) tableClientes.getValueAt(row, 1);
+        String cpf = (String) tableClientes.getValueAt(row, 1);
 
         database.delete(cpf);
         modelo.removeRow(row);
@@ -86,19 +111,29 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void resetFields() {
         txtNome.setText("");
         txtCPF.setText("");
+        txtTelefone.setText("");
+        txtEndereco.setText("");
+        txtNumero.setText("");
+        txtCidade.setText("");
+        txtEstado.setText("");
     }
         
     
     private void setFields (Cliente cliente) {
         txtNome.setText(cliente.getNome());
-        txtCPF.setText(cliente.getCpf().toString());
+        txtCPF.setText(cliente.getCpf());
+        txtTelefone.setText(cliente.getTelefone());
+        txtEndereco.setText(cliente.getEndereco());
+        txtNumero.setText(cliente.getNumero());
+        txtCidade.setText(cliente.getCidade());
+        txtEstado.setText(cliente.getEstado());
     }
     
     
     private Boolean validateFields(String... fields) {
         for (String field : fields) {
             if ("".equals(field)) {
-                showError("Campos não válidos");
+                showError("Campos inválidos");
                 return false;
             }
         }
@@ -108,21 +143,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     
     private void showError(String message) {
         JOptionPane.showMessageDialog(null, message, "Erro", JOptionPane.INFORMATION_MESSAGE);
-            }
+    }
     
-    
-    private void showExitConfirmation(String message) {
-
-        }
-    
-    
-    private void showConfirmation(String message) {
-        int result = JOptionPane.showConfirmDialog(this, message, "Sair", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (result == JOptionPane.YES_OPTION) {
-                //TODO
-            }
-        }
-        
+            
     private void sair(String message) {
         int result = JOptionPane.showConfirmDialog(this, message,
             "Sair",
@@ -135,15 +158,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         }
     }
 
-    public static boolean canParseLong(String str) {
-            try {
-                Long.parseLong(str);
-                return true;
-            } catch (NumberFormatException e) {
-                return false;
-        }
-}
-     
+       
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -260,36 +275,37 @@ public class TelaPrincipal extends javax.swing.JFrame {
                         .addGap(6, 6, 6)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(lblNumero)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblNumero)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtNumero, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(lblCidade)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(txtCidade, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(0, 0, Short.MAX_VALUE)
-                                        .addComponent(btnClear)
+                                        .addComponent(btnCreate)
                                         .addGap(18, 18, 18)
-                                        .addComponent(btnCreate)))
+                                        .addComponent(btnUpdate)))
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblEstado)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(txtEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(lblEstado)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(txtEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(1, 1, 1)
+                                                .addComponent(lblTelefone)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(txtTelefone, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(56, 56, 56))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(1, 1, 1)
-                                        .addComponent(lblTelefone)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtTelefone, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btnUpdate)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnDelete)))
-                                .addGap(56, 56, 56))
+                                        .addComponent(btnDelete)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnClear))))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblEndereco)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -349,8 +365,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnUpdate)
                                 .addComponent(btnCreate)
-                                .addComponent(btnClear))
-                            .addComponent(btnDelete))
+                                .addComponent(btnDelete))
+                            .addComponent(btnClear))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)

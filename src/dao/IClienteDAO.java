@@ -13,9 +13,9 @@ import cadastrocliente.Cliente;
 public interface IClienteDAO {
     public Boolean create(Cliente cliente);
 
-    public Cliente read(Long cpf);
+    public Cliente read(String cpf);
 
     public void update(Cliente cliente);
 
-    public void delete(Long cpf);
+    public void delete(String cpf);
 }
